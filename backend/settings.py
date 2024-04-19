@@ -20,8 +20,7 @@ CLOUDINARY_STORAGE = {
 
 DEBUG = False
 SECRET_KEY = config('SECRET_KEY')
-
-ALLOWED_HOSTS = [config('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = ['127.0.0.1'] if DEBUG else [config('ALLOWED_HOSTS')]
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
