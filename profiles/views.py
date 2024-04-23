@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Profile
-from .serializers import ProfileSerializer
+from .serializers import ProfileSerializer, CurrentUserSerializer
 
 class ProfileList(APIView):
     """
@@ -25,4 +26,12 @@ class ProfileDetail(APIView):
     def get(self, request, id):
         profile = get_object_or_404(Profile, id=id)
         serializer = ProfileSerializer(profile, context={"request": request})
+        return Response(serializer.data)
+    
+class CurrentUserProfile(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile = get_object_or_404(Profile, owner=request.user)
+        serializer = CurrentUserSerializer(profile, context={"request": request})
         return Response(serializer.data)

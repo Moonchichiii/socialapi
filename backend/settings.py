@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from decouple import config
 import dj_database_url
@@ -14,7 +13,7 @@ CLOUDINARY_STORAGE = {
 }
 
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'backend.RegisterSerializer',
+    'REGISTER_SERIALIZER': 'backend.InstanLoginRegisterSerializer',
 }
 
 DEBUG = config('DEBUG', default=False, cast=bool)
