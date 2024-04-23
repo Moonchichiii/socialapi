@@ -11,8 +11,5 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['id', 'owner', 'created_at', 'name', 'content', 'image']
 
-    def get_is_owner(self, obj):
-        """
-        Returns true if the request user is the owner of the profile.
-        """
+    def get_is_owner(self, obj):      
         return obj.owner == self.context['request'].user
