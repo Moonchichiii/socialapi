@@ -28,10 +28,11 @@ class ProfileDetail(APIView):
         serializer = ProfileSerializer(profile, context={"request": request})
         return Response(serializer.data)
     
+
+
 class CurrentUserProfile(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        profile = get_object_or_404(Profile, owner=request.user)
-        serializer = CurrentUserSerializer(profile, context={"request": request})
+        serializer = CurrentUserSerializer(request.user, context={"request": request})
         return Response(serializer.data)
