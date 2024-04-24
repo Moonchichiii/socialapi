@@ -11,6 +11,6 @@ urlpatterns = [
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path('profiles/', include('profiles.urls')),
+    path('api/profiles/', include('profiles.urls')),
     
 ]
