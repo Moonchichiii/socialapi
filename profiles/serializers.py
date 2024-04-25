@@ -17,8 +17,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         return obj.owner == self.context['request'].user
 
 class CurrentUserSerializer(UserDetailsSerializer):
-    profile_image = serializers.ImageField(source='profile.image', read_only=True)
+    owner_id = serializers.ReadOnlyField(source='profile.id')
+    owner_image = serializers.ReadOnlyField(source='profile.image.url')
 
     class Meta(UserDetailsSerializer.Meta):
-        model = get_user_model()
-        fields = UserDetailsSerializer.Meta.fields + ('profile_image',)
+        fields = UserDetailsSerializer.Meta.fields + ('owner_id', 'owner_image',)
