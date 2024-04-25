@@ -1,11 +1,13 @@
-from django.shortcuts import get_object_or_404 
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework import status
+
+
 from .models import Profile
 from .serializers import ProfileSerializer, CurrentUserSerializer
 
@@ -18,7 +20,6 @@ class ProfileList(APIView):
         profiles = Profile.objects.all()
         serializer = ProfileSerializer(profiles, many=True, context={"request": request})
         return Response(serializer.data)
-
 
 class ProfileDetail(APIView):
     """
