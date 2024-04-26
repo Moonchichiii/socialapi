@@ -1,24 +1,30 @@
 from django.contrib.auth import get_user_model
-from dj_rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from .models import Profile
 
 class ProfileSerializer(serializers.ModelSerializer):
-    """
-    Serializer for user profiles.
-    """
-    owner = serializers.ReadOnlyField(source='owner.username')    
+    owner = serializers.ReadOnlyField(source='owner.username')
+    owner_id = serializers.SerializerMethodField()
+    owner_image = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ['id', 'owner', 'created_at', 'name', 'content', 'image']
+        fields = ['id', 'owner', 'created_at', 'name', 'content', 'image', 'owner_id', 'owner_image']
 
-    def get_is_owner(self, obj):      
-        return obj.owner == self.context['request'].user
+    def get_owner_id(self, obj):
+        return obj.owner.id if self.context.get('request').user == obj.owner else None
 
-class CurrentUserSerializer(UserDetailsSerializer):
-    owner_id = serializers.ReadOnlyField(source='profile.id')
-    owner_image = serializers.ReadOnlyField(source='profile.image.url')
+    def get_owner_image(self, obj):
+        return obj.image.url if obj.image and self.context.get('request').user == obj.owner else None
 
-    class Meta(UserDetailsSerializer.Meta):
-        fields = UserDetailsSerializer.Meta.fields + ('owner_id', 'owner_image',)
+    def validate_name(self, value):
+        if Profile.objects.filter(name=value).exclude(id=self.instance.id).exists():
+            raise serializers.ValidationError("Sorry the username is already in use.")
+        return value
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.content = validated_data.get('content', instance.content)
+        instance.image = validated_data.get('image', instance.image)
+        instance.save()
+        return instance

@@ -57,6 +57,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'backend.CurrentUserSerializer',
+}
+
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/tmp/app-messages'
 
