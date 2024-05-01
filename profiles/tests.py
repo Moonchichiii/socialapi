@@ -1,40 +1,18 @@
 from django.test import TestCase
+from django.contrib.auth import get_user_model
 from .models import Profile
-from django.contrib.auth.models import User
-
-# Create your tests here.
 
 class ProfileModelTestCase(TestCase):
-    """
-    Test cases for the Profile model.
-    """
     def setUp(self):
-        # Create a test user
-        self.test_user = User.objects.create_user(
-            username="testuser", password="testpassword"
-        )
-        # Profile of the test user
-        self.profile = Profile.objects.create(
-            owner=self.test_user,
-            name="Tester2024",
-            content="content's",
-            image="default.jpg"
-        )
+        self.test_user = get_user_model().objects.create_user(username="testuser", password="testpassword")
 
-    def test_profile_creation(self):
-        expected_name = "Tester2024"
-        self.assertEqual(
-            self.profile.name,
-            expected_name,
-            f"Profile name to be {expected_name}, {self.profile.name}."
-        )
+    def test_profile_auto_creation(self):
+        profile_exists = Profile.objects.filter(user=self.test_user).exists()
+        self.assertTrue(profile_exists)
 
-    def test_profile_image_default(self):
-        self.assertIn("default.jpg", self.profile.image.name)
+    def test_profile_data(self):
+        profile = Profile.objects.get(user=self.test_user)
+        self.assertEqual(profile.display_name, self.test_user.username)
+        self.assertTrue(profile.image.name.endswith('default.png'))
 
-    def test_profile_string_representation(self):
-        
-        self.assertEqual(
-            str(self.profile),
-            f"{self.test_user.username}'s profile"
-        )
+    

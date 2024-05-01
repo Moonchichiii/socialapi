@@ -1,12 +1,7 @@
 from django.contrib.auth import get_user_model
-
-from django.contrib.auth.password_validation import validate_password
-from rest_framework_simplejwt.tokens import RefreshToken
-from profiles.serializers import ProfileSerializer
-
-from dj_rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
-from profiles.models import Profile
+from django.contrib.auth.password_validation import validate_password
+
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -14,11 +9,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ['username', 'email', 'password1', 'password2']
 
     def validate(self, data):
         if data['password1'] != data['password2']:
-            raise serializers.ValidationError({"password2": "Password fields didn't match."})
+            raise serializers.ValidationError("Oops! Passwords do not match!")
         return data
 
     def create(self, validated_data):
@@ -27,16 +22,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=validated_data['password1']
         )
-        # Creating a profile usign signals. 
-        profile = Profile.objects.create(owner=user)
         return user
- 
 
-class CurrentUserSerializer(UserDetailsSerializer):
-    profile_id = serializers.ReadOnlyField(source='profile.id')
-    profile_image = serializers.ReadOnlyField(source='profile.image.url')
+class CurrentUserSerializer(serializers.ModelSerializer):
+    display_name = serializers.CharField(source='profile.display_name', read_only=True)
+    image = serializers.ImageField(source='profile.image', read_only=True)
 
-    class Meta(UserDetailsSerializer.Meta):
-        fields = UserDetailsSerializer.Meta.fields + (
-            'profile_id', 'profile_image'
-        )
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'display_name', 'image']

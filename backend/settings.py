@@ -3,6 +3,7 @@ from decouple import config
 import dj_database_url
 from datetime import timedelta
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Cloudinary settings
@@ -11,7 +12,6 @@ CLOUDINARY_STORAGE = {
     'API_KEY': config('CLOUDINARY_API_KEY'),
     'API_SECRET': config('CLOUDINARY_API_SECRET')
 }
-
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 SECRET_KEY = config('SECRET_KEY')
@@ -23,27 +23,25 @@ else:
     ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
     CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS').split(',')
 
+
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
-
 SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_HTTPONLY = False 
 
-if DEBUG:
-    JWT_ACCESS_TOKEN_EXPIRATION = timedelta(minutes=5)
-    JWT_REFRESH_TOKEN_EXPIRATION = timedelta(days=1)
-    JWT_AUTH_COOKIE = 'jwt_access_token'
-    JWT_REFRESH_AUTH_COOKIE = 'jwt_refresh_token'
-    JWT_AUTH_COOKIE_SECURE = False
-    JWT_AUTH_COOKIE_HTTP_ONLY = False
-else:
-    JWT_ACCESS_TOKEN_EXPIRATION = timedelta(minutes=30)
-    JWT_REFRESH_TOKEN_EXPIRATION = timedelta(days=7)
-    JWT_AUTH_COOKIE = 'jwt_access_token'
-    JWT_REFRESH_AUTH_COOKIE = 'jwt_refresh_token'
-    JWT_AUTH_COOKIE_SECURE = True
-    JWT_AUTH_COOKIE_HTTP_ONLY = True
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_COOKIE': 'jwt_access_token',
+    'AUTH_COOKIE_SECURE': True,
+    'AUTH_COOKIE_HTTP_ONLY': True,
+    'AUTH_COOKIE': 'jwt_refresh_token',
+    'AUTH_COOKIE_SECURE': True,
+    'AUTH_COOKIE_HTTP_ONLY': True,
+    'AUTH_COOKIE_SAMESITE': 'None' if DEBUG else 'Lax'
+}
+
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -56,7 +54,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
 }
-
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/tmp/app-messages'
@@ -73,13 +70,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
-    'django_filters',
-    'dj_rest_auth',
-    'dj_rest_auth.registration',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
+    'django_filters',    
     'profiles',
 ]
 
@@ -87,8 +79,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    'backend.csrf.DisableCSRFOnJWTAuth',
+    "django.middleware.common.CommonMiddleware",    
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "allauth.account.middleware.AccountMiddleware",
