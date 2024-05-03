@@ -4,9 +4,9 @@ from django.contrib.auth import get_user_model
 from .models import Profile
 
 @receiver(post_save, sender=get_user_model())
-def create_profile(sender, instance, created, **kwargs):
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+  
     if created:
-        Profile.objects.create(user=instance, display_name=instance.username)  
+        Profile.objects.create(user=instance, display_name=instance.username)
     else:
-        instance.profile.display_name = instance.username
         instance.profile.save()

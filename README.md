@@ -161,7 +161,7 @@ Clone the repository to your local machine:
 
 ## Testing
 
-### Postman endpoint testing ( Login / Registration )
+### Postman endpoint testing ( Registration / Login  )
 
 ![Registration Test](<testingmd/images/Screenshot 2024-05-01 113635.png>)
 ![Login Test](<testingmd/images/Screenshot 2024-05-01 113722.png>)

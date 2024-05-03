@@ -17,4 +17,5 @@ urlpatterns = [
     path('api/logout/', logout, name='logout'),
     path('api/current-user/', current_user, name='current_user'),
     path('api/profiles/', include('profiles.urls')),
+    path('api/posts/', include('posts.urls')),
 ]

@@ -3,6 +3,9 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
+from django.http import Http404
+from django.contrib.auth import get_user_model
+
 from .serializers import RegistrationSerializer, CurrentUserSerializer
 
 @api_view(['GET'])
@@ -46,11 +49,14 @@ def logout(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
-    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def current_user(request):
-    """
-    Retrieve current user's profile data.
-    """
-    return Response(CurrentUserSerializer(request.user).data, status=status.HTTP_200_OK)
+    user_id = request.user.id
+    User = get_user_model()
+    try:
+        user = User.objects.select_related('profile').get(id=user_id)
+        serializer = CurrentUserSerializer(user)
+        return Response(serializer.data)
+    except User.DoesNotExist:
+        raise Http404("User not found")
