@@ -30,7 +30,7 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = False 
 if DEBUG:
-    JWT_ACCESS_TOKEN_EXPIRATION = timedelta(minutes=5)
+    JWT_ACCESS_TOKEN_EXPIRATION = timedelta(minutes=25)
     JWT_REFRESH_TOKEN_EXPIRATION = timedelta(days=1)
     JWT_AUTH_COOKIE = 'jwt_access_token'
     JWT_REFRESH_AUTH_COOKIE = 'jwt_refresh_token'
@@ -53,7 +53,17 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
+    'PAGE_SIZE': 10,
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle'  
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day',
+        'burst': '60/minute'  
+    }
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
