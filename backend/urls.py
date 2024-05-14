@@ -18,4 +18,5 @@ urlpatterns = [
     path('api/current-user/', current_user, name='current_user'),
     path('api/profiles/', include('profiles.urls')),
     path('api/posts/', include('posts.urls')),
+    path('api/comments/', include('comments.urls')),
 ]

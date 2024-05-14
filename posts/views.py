@@ -1,82 +1,126 @@
+from rest_framework import status
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status
+from django.db.models import Q
+
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
-from backend.permissions import IsOwnerOrReadOnly
-from rest_framework.permissions import IsAuthenticated 
-from .models import Post, Like
-from .serializers import PostSerializer
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
-
-
 from rest_framework.throttling import UserRateThrottle
 
+from .models import Post
+from .serializers import PostSerializer
+from backend.permissions import IsOwnerOrReadOnly
+
+
 class StandardResultsSetPagination(PageNumberPagination):
+    """Pagination class for the PostListCreateView."""
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 100
 
 
 class BurstRateThrottle(UserRateThrottle):
-      scope = 'burst'
-      
+    """Custom throttle class for burst rate limiting."""
+    scope = 'burst'
 
-class PostListCreateView(generics.ListCreateAPIView):
-    queryset = Post.objects.all().order_by('-created_at')
-    serializer_class = PostSerializer
-    pagination_class = StandardResultsSetPagination
-    throttle_classes = [BurstRateThrottle]
+
+class PostListCreateView(APIView):
     permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['ingredients','title', 'created_at']
+    pagination_class = StandardResultsSetPagination
 
-    def perform_create(self, serializer):
-       
-        serializer.save(profile=self.request.user.profile)
+    def get(self, request):
+        queryset = Post.objects.all().order_by('-created_at')
+        query = request.query_params.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |
+                Q(description__icontains=query) |
+                Q(ingredients__icontains=query) |
+                Q(recipe__icontains=query)
+            )
+        if not request.user.is_superuser:
+            queryset = queryset.filter(Q(approved=True) | Q(profile=request.user.profile))
 
-class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+        paginator = self.pagination_class()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+        serializer = PostSerializer(paginated_queryset, many=True, context={'request': request})
+        return paginator.get_paginated_response(serializer.data)
+
+    def post(self, request):
+        data = request.data
+        serializer = PostSerializer(data=data, context={'request': request})
+        if serializer.is_valid():
+            approved = request.user.is_superuser
+            serializer.save(profile=request.user.profile, approved=approved)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostDetailView(APIView):
     permission_classes = [IsOwnerOrReadOnly]
 
-    def get_object(self):
-        """
-     
-        """
-        pk = self.kwargs.get('pk')
-        return get_object_or_404(Post, pk=pk)
+    def get(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        serializer = PostSerializer(post, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, *args, **kwargs):
-        post = self.get_object()
-        serializer = self.get_serializer(post, data=request.data)
+    def put(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        self.check_object_permissions(request, post)
+        serializer = PostSerializer(post, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, *args, **kwargs):
-        post = self.get_object()
-        serializer = self.get_serializer(post, data=request.data, partial=True)
+    def patch(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        self.check_object_permissions(request, post)
+        serializer = PostSerializer(post, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
-        post = self.get_object()
+    def delete(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        self.check_object_permissions(request, post)
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class LikeView(generics.GenericAPIView):
-  
+
+class PostLikes(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, post_id):
-        post = get_object_or_404(Post, id=post_id)
-        like, created = Like.objects.get_or_create(user=request.user, post=post)
-        if created:
-            return Response({'message': 'Liked!'}, status=status.HTTP_201_CREATED)
-        return Response({'message': 'Only Possible to like it once!'}, status=status.HTTP_409_CONFLICT)
+        post = get_object_or_404(Post, pk=post_id)
+        user = request.user
+
+        if user == post.profile.user:
+            return Response({'error': 'You cannot like your own post'}, status=status.HTTP_403_FORBIDDEN)
+
+        if user not in post.likes.all():
+            post.likes.add(user)
+            return Response({'status': 'liked', 'likes_count': post.likes.count()}, status=status.HTTP_200_OK)
+        return Response({'error': 'Already liked'}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, post_id):
-        like = get_object_or_404(Like, user=request.user, post_id=post_id)
-        like.delete()
-        return Response({'message': 'Like removed!'}, status=status.HTTP_204_NO_CONTENT)
+        post = get_object_or_404(Post, pk=post_id)
+        user = request.user
+
+        if user not in post.likes.all():
+            return Response({'error': 'Not liked'}, status=status.HTTP_400_BAD_REQUEST)
+
+        post.likes.remove(user)
+        return Response({'status': 'unliked', 'likes_count': post.likes.count()}, status=status.HTTP_200_OK)
+
+
+class LikedPosts(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        posts = Post.objects.filter(likes=user).order_by('-created_at')
+        serializer = PostSerializer(posts, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)

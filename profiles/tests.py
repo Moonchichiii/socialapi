@@ -1,7 +1,8 @@
+from tests.baseuser import BaseUserTestCase
 from django.urls import reverse
 from rest_framework import status
 from .models import Profile
-from test.baseuser import BaseUserTestCase
+
 
 class ProfileModelTestCase(BaseUserTestCase):
     def setUp(self):

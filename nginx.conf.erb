@@ -1,0 +1,19 @@
+worker_processes 1;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream backend {
+        server <%= ENV['backend'] %>;  
+    }
+
+    server {
+        listen <%= ENV['PORT'] %>;
+
+        location / { 
+                        
+        }
+    }
+}

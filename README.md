@@ -175,3 +175,5 @@ Clone the repository to your local machine:
 
 
 ## Acknowledgements
+
+https://books.agiliq.com/projects/django-orm-cookbook/en/latest/query_relatedtool.html

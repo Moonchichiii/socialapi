@@ -29,8 +29,10 @@ class CurrentUserSerializer(serializers.ModelSerializer):
     display_name = serializers.CharField(source='profile.display_name', read_only=True)
     image = serializers.ImageField(source='profile.image', read_only=True)
     bio = serializers.CharField(source='profile.bio', read_only=True)
+    is_superuser = serializers.BooleanField(read_only=True)
+    
 
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'profile_id', 'display_name', 'image', 'bio']
+        fields = ['id', 'username', 'profile_id', 'display_name', 'image', 'bio', 'is_superuser']
     profile_id = serializers.IntegerField(source='profile.id', read_only=True)

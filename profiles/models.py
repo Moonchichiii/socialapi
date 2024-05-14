@@ -1,22 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Count
+
 
 class Profile(models.Model):
-    """
-    Represents a user profile.
-    """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     display_name = models.CharField(max_length=255, blank=True, default="")
+    bio = models.TextField(blank=True)
     image = models.ImageField(upload_to='profiles/images/', default='default.png')
-    bio = models.TextField(blank=True, verbose_name="Biography")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.display_name if self.display_name else self.user.username
+
     class Meta:
-        """
-        Meta class for Profile model.
-        """
         ordering = ['-created_at']
 
-        def __str__(self):
-            return f"{self.user.get_username()}'s Profile"
+    def total_likes(self):
+        from posts.models import Post
+        return Post.objects.filter(profile=self).aggregate(total_likes=Count('likes'))['total_likes']
+
+
+    
