@@ -12,13 +12,13 @@ class ProfileList(APIView):
     API view for listing profiles.
     """
 
-    def get(self):
+    def get(self, request):
         """
         Get the queryset of profiles, sorted by 'most_liked' posts.
         """
         queryset = Profile.objects.annotate(
             total_likes=Count('posts__likes', distinct=True)
-        ).order_by('-total_likes').all()
+        ).order_by('-total_likes')
         serializer = ProfileSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -37,7 +37,7 @@ class ProfileDetail(APIView):
         self.check_object_permissions(self.request, profile)
         return profile
 
-    def get(self, pk):
+    def get(self, request, pk):
         """
         Get the serialized data of the profile.
         """

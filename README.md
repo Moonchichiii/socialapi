@@ -166,6 +166,31 @@ Clone the repository to your local machine:
 ![Registration Test](<testingmd/images/Screenshot 2024-05-01 113635.png>)
 ![Login Test](<testingmd/images/Screenshot 2024-05-01 113722.png>)
 
+### Postman endpoint testing ( create post / update post  )
+![Creating post](<testingmd/images/Screenshot 2024-05-14 200629.png>)
+![Getting Post](<testingmd/images/Screenshot 2024-05-14 200629.png>)
+![Update Post](<testingmd/images/Screenshot 2024-05-14 201428.png>)
+
+
+### Postman endpoint testing ( Like/unlike a Post  )
+
+![Like a Post](<testingmd/images/Screenshot 2024-05-14 215509.png>)
+![Unlike a Post](<testingmd/images/Screenshot 2024-05-14 215536.png>)
+
+### Postman endpoint testing ( Comment on Post  )
+
+![Comment on Post](<testingmd/images/Screenshot 2024-05-14 201656.png>)
+![Fetching Comment](<testingmd/images/Screenshot 2024-05-14 202855.png>)
+
+
+### Postman endpoint testing ( Followers )
+
+
+### Postman endpoint testing ( Dinner Club )
+
+
+
+
 ### Unit tests 
 
 ### Coverage
