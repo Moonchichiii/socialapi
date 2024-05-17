@@ -19,4 +19,5 @@ urlpatterns = [
     path('api/profiles/', include('profiles.urls')),
     path('api/posts/', include('posts.urls')),
     path('api/comments/', include('comments.urls')),
+    path('api/followers/', include('followers.urls')),
 ]
