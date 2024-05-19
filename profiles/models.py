@@ -20,4 +20,3 @@ class Profile(models.Model):
     def total_likes(self):
         from posts.models import Post
         return Post.objects.filter(profile=self).aggregate(total_likes=Count('likes'))['total_likes']
-
