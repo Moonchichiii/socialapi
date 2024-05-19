@@ -3,7 +3,6 @@ from decouple import config
 import dj_database_url
 from datetime import timedelta
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Cloudinary settings
@@ -23,26 +22,18 @@ else:
     ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
     CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS').split(',')
 
-
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_HTTPONLY = False 
-if DEBUG:
-    JWT_ACCESS_TOKEN_EXPIRATION = timedelta(minutes=25)
-    JWT_REFRESH_TOKEN_EXPIRATION = timedelta(days=1)
-    JWT_AUTH_COOKIE = 'jwt_access_token'
-    JWT_REFRESH_AUTH_COOKIE = 'jwt_refresh_token'
-    JWT_AUTH_COOKIE_SECURE = False
-    JWT_AUTH_COOKIE_HTTP_ONLY = False
-else:
-    JWT_ACCESS_TOKEN_EXPIRATION = timedelta(minutes=30)
-    JWT_REFRESH_TOKEN_EXPIRATION = timedelta(days=7)
-    JWT_AUTH_COOKIE = 'jwt_access_token'
-    JWT_REFRESH_AUTH_COOKIE = 'jwt_refresh_token'
-    JWT_AUTH_COOKIE_SECURE = True
-    JWT_AUTH_COOKIE_HTTP_ONLY = True
+CSRF_COOKIE_HTTPONLY = not DEBUG
+
+JWT_ACCESS_TOKEN_EXPIRATION = timedelta(minutes=30)
+JWT_REFRESH_TOKEN_EXPIRATION = timedelta(days=7)
+JWT_AUTH_COOKIE = 'jwt_access_token'
+JWT_REFRESH_AUTH_COOKIE = 'jwt_refresh_token'
+JWT_AUTH_COOKIE_SECURE = not DEBUG
+JWT_AUTH_COOKIE_HTTP_ONLY = not DEBUG
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -65,9 +56,6 @@ REST_FRAMEWORK = {
         'burst': '60/minute'  
     }
 }
-
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '/tmp/app-messages'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -122,10 +110,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3') if not DEBUG else {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
 }
 
 AUTH_PASSWORD_VALIDATORS = [
