@@ -1,49 +1,35 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, status, serializers
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from profiles.models import Profile
 from .models import Follower
 from .serializers import FollowerSerializer
 
-class FollowersListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
+class FollowerListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Follower.objects.all().order_by('-created_at')
     serializer_class = FollowerSerializer
 
-    def get_queryset(self):
-        user_profile = get_object_or_404(Profile, user=self.request.user)
-        return Follower.objects.filter(profile=user_profile).order_by('-created_at')
-
-class FollowingListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = FollowerSerializer
-
-    def get_queryset(self):
-        user_profile = get_object_or_404(Profile, user=self.request.user)
-        return Follower.objects.filter(follower=user_profile).order_by('-created_at')
-
-class FollowUnfollowView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = FollowerSerializer
-
-    def post(self, request, profile_id):
+    def perform_create(self, serializer):
+        profile_id = self.request.data.get('profile_id')
+        
+        if not profile_id:
+            raise serializers.ValidationError({"detail": "Profile ID is required!"})
         profile_to_follow = get_object_or_404(Profile, id=profile_id)
-        user_profile = get_object_or_404(Profile, user=request.user)
+        if profile_to_follow.user == self.request.user:
+            raise serializers.ValidationError({"detail": "You can't follow yourself!"})
+        if Follower.objects.filter(follower=self.request.user.profile, profile=profile_to_follow).exists():
+            raise serializers.ValidationError({"detail": "You are already following this profile!"})
+        serializer.save(follower=self.request.user.profile, profile=profile_to_follow)
 
-        if Follower.objects.filter(follower=user_profile, profile=profile_to_follow).exists():
-            return Response({"detail": "You are already following this profile."}, status=status.HTTP_400_BAD_REQUEST)
+class FollowerDetailView(generics.RetrieveDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Follower.objects.all().order_by('-created_at')
+    serializer_class = FollowerSerializer
 
-        follower_instance = Follower(follower=user_profile, profile=profile_to_follow)
-        follower_instance.save()
-        return Response({"detail": "Successfully followed the profile."}, status=status.HTTP_201_CREATED)
-
-    def delete(self, request, profile_id):
-        profile_to_unfollow = get_object_or_404(Profile, id=profile_id)
-        user_profile = get_object_or_404(Profile, user=request.user)
-
-        follower_instance = Follower.objects.filter(follower=user_profile, profile=profile_to_unfollow)
-        if follower_instance.exists():
-            follower_instance.delete()
-            return Response({"detail": "Successfully unfollowed the profile."}, status=status.HTTP_204_NO_CONTENT)
-
-        return Response({"detail": "You are not following this profile."}, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, *args, **kwargs):
+        profile_to_unfollow = get_object_or_404(Profile, id=kwargs['pk'])
+        follower_instance = get_object_or_404(Follower, follower=request.user.profile, profile=profile_to_unfollow)
+        follower_instance.delete()
+        return Response({"detail": "Success!"}, status=status.HTTP_204_NO_CONTENT)

@@ -185,6 +185,10 @@ Clone the repository to your local machine:
 
 ### Postman endpoint testing ( Followers )
 
+![Follow](<testingmd/images/followers/Screenshot 2024-05-21 110331.png>)
+![Get FollowingList](<testingmd/images/followers/Screenshot 2024-05-21 110838.png>)
+![Remove "Delete" follower](<testingmd/images/followers/Screenshot 2024-05-21 110905.png>)
+
 
 ### Postman endpoint testing ( Dinner Club )
 

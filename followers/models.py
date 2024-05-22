@@ -8,6 +8,7 @@ class Follower(models.Model):
 
     class Meta:
         unique_together = ('profile', 'follower')
+        ordering = ['-created_at']
 
     def __str__(self):
         return f'{self.follower.display_name} follows {self.profile.display_name}'

@@ -20,4 +20,5 @@ urlpatterns = [
     path('api/posts/', include('posts.urls')),
     path('api/comments/', include('comments.urls')),
     path('api/followers/', include('followers.urls')),    
+    path('api/dinnerclub/', include('dinnerclub.urls')),    
 ]
