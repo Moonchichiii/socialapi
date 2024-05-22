@@ -166,6 +166,10 @@ Clone the repository to your local machine:
 ![Registration Test](<testingmd/images/Screenshot 2024-05-01 113635.png>)
 ![Login Test](<testingmd/images/Screenshot 2024-05-01 113722.png>)
 
+Update on the Authentication: 
+![alt text](<testingmd/images/cookiesfrombackend/Screenshot 2024-05-22 181948.png>)
+![alt text](<testingmd/images/cookiesfrombackend/Screenshot 2024-05-22 182922.png>)
+![alt text](<testingmd/images/cookiesfrombackend/Screenshot 2024-05-22 184925.png>)
 ### Postman endpoint testing ( create post / update post  )
 ![Creating post](<testingmd/images/Screenshot 2024-05-14 200629.png>)
 ![Getting Post](<testingmd/images/Screenshot 2024-05-14 200629.png>)
