@@ -17,9 +17,10 @@ urlpatterns = [
     path('api/register/', register, name='register'),
     path('api/logout/', logout, name='logout'),
     path('api/current-user/', current_user, name='current_user'),
-    path('api/profiles/', include('profiles.urls')),
-    path('api/posts/', include('posts.urls')),
-    path('api/comments/', include('comments.urls')),
-    path('api/followers/', include('followers.urls')),    
-    path('api/dinnerclub/', include('dinnerclub.urls')),    
+    
+    path('api/profiles/', include('profiles.urls'), name='profiles'),
+    path('api/posts/', include('posts.urls'), name='posts'),
+    path('api/comments/', include('comments.urls'), name='comments'),
+    path('api/followers/', include('followers.urls'), name='followers'),
+    path('api/dinnerclub/', include('dinnerclub.urls'), name='dinnerclub'),
 ]
