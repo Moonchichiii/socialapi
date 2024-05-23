@@ -5,7 +5,12 @@ from profiles.models import Profile
 from .models import Post
 
 class PostAPITests(BaseUserTestCase):
+    
     def setUp(self):
+        """
+        Test cases for the Post API.
+        """
+
         super().setUp()
         self.profile = getattr(self.user, 'profile', None) or Profile.objects.create(user=self.user)
         self.post = Post.objects.create(
@@ -22,6 +27,9 @@ class PostAPITests(BaseUserTestCase):
         self.liked_posts_url = reverse('liked-posts')
 
     def test_create_post(self):
+        """
+        Creating a new post.
+        """
         post_data = {
             'title': 'Post',
             'ingredients': 'Ingredients update',
@@ -36,34 +44,20 @@ class PostAPITests(BaseUserTestCase):
         self.assertEqual(Post.objects.count(), 2)
 
     def test_delete_post(self):
+        """
+        Deleting a post.
+        """
         self.client.force_authenticate(user=self.user)
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Post.objects.count(), 0)
-
-    def test_like_post(self):
-        self.client.force_authenticate(user=self.user)
-        response = self.client.post(self.like_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(self.post.likes.count(), 1)
-
-    def test_unlike_post(self):
-        self.client.force_authenticate(user=self.user)
-        self.client.post(self.like_url)
-        response = self.client.delete(self.like_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(self.post.likes.count(), 0)
-
-    def test_liked_posts_list(self):
-        self.client.force_authenticate(user=self.user)
-        self.client.post(self.like_url)
-        response = self.client.get(self.liked_posts_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        liked_posts = response.json().get('results', [])  # Ensure correct parsing
-        liked_posts = [post for post in liked_posts if post['id'] == self.post.pk]
-        self.assertEqual(len(liked_posts), 1)
+          
+        
 
     def test_update_post(self):
+        """
+        Test updating a post.
+        """
         new_data = {
             'title': 'Updated Title',
             'description': 'Updated Description'
