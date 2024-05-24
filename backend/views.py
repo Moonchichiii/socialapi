@@ -7,7 +7,7 @@ from rest_framework import status
 from django.http import Http404
 from django.contrib.auth import get_user_model
 
-from .serializers import RegistrationSerializer,LoginSerializer, CurrentUserSerializer
+from .serializers import RegistrationSerializer, LoginSerializer, CurrentUserSerializer
 
 @api_view(['GET'])
 def root_route(request):
@@ -33,23 +33,8 @@ def register(request):
             'refresh_token': refresh_token,
             'user_id': user.id
         }, status=status.HTTP_201_CREATED)
-        response.set_cookie(
-            settings.JWT_AUTH_COOKIE,
-            access_token,
-            httponly=True,
-            secure=settings.JWT_AUTH_COOKIE_SECURE,
-            samesite='None',
-        )
-        response.set_cookie(
-            settings.JWT_REFRESH_AUTH_COOKIE,
-            refresh_token,
-            httponly=True,
-            secure=settings.JWT_AUTH_COOKIE_SECURE,
-            samesite='None',
-        )
         return response
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -66,21 +51,8 @@ def login(request):
         response = Response({
             'access_token': access_token,
             'refresh_token': refresh_token,
+            
         }, status=status.HTTP_200_OK)
-        response.set_cookie(
-            settings.JWT_AUTH_COOKIE,
-            access_token,
-            httponly=True,
-            secure=settings.JWT_AUTH_COOKIE_SECURE,
-            samesite='None',
-        )
-        response.set_cookie(
-            settings.JWT_REFRESH_AUTH_COOKIE,
-            refresh_token,
-            httponly=True,
-            secure=settings.JWT_AUTH_COOKIE_SECURE,
-            samesite='None',
-        )
         return response
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -91,13 +63,10 @@ def logout(request):
     User logout and blacklist refresh token.
     """
     try:
-        refresh_token = request.COOKIES.get(settings.JWT_REFRESH_AUTH_COOKIE)
+        refresh_token = request.data.get('refresh')
         token = RefreshToken(refresh_token)
         token.blacklist()
-        response = Response({"message": "Logged out successfully"}, status=status.HTTP_205_RESET_CONTENT)
-        response.delete_cookie(settings.JWT_AUTH_COOKIE)
-        response.delete_cookie(settings.JWT_REFRESH_AUTH_COOKIE)
-        return response
+        return Response({"message": "Logged out successfully"}, status=status.HTTP_205_RESET_CONTENT)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     

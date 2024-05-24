@@ -22,5 +22,5 @@ urlpatterns = [
     path('api/posts/', include('posts.urls'), name='posts'),
     path('api/comments/', include('comments.urls'), name='comments'),
     path('api/followers/', include('followers.urls'), name='followers'),
-    path('api/dinnerclub/', include('dinnerclub.urls'), name='dinnerclub'),
+   
 ]
