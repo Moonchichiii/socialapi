@@ -29,12 +29,18 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = not DEBUG
 
-JWT_ACCESS_TOKEN_EXPIRATION = timedelta(minutes=30)
-JWT_REFRESH_TOKEN_EXPIRATION = timedelta(days=7)
-JWT_AUTH_COOKIE = 'jwt_access_token'
-JWT_REFRESH_AUTH_COOKIE = 'jwt_refresh_token'
-JWT_AUTH_COOKIE_SECURE = not DEBUG
-JWT_AUTH_COOKIE_HTTP_ONLY = not DEBUG
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -76,8 +82,8 @@ INSTALLED_APPS = [
     'posts',
     'comments',
     'followers',
-    
 ]
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
