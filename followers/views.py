@@ -7,7 +7,7 @@ from .models import Follower
 from .serializers import FollowerSerializer
 
 class FollowerListCreateView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     queryset = Follower.objects.all().order_by('-created_at')
     serializer_class = FollowerSerializer
 
