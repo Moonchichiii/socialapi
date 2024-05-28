@@ -1,33 +1,18 @@
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.throttling import UserRateThrottle
 
 from .models import Post
 from .serializers import PostSerializer
-from backend.permissions import IsOwnerOrReadOnly
-
-
-class StandardResultsSetPagination(PageNumberPagination):
-    """Pagination class for the PostListCreateView."""
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
-
-
-class BurstRateThrottle(UserRateThrottle):
-    """Custom throttle class for burst rate limiting."""
-    scope = 'burst'
 
 
 class PostListCreateView(APIView):
     permission_classes = [IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
+    pagination_class = PageNumberPagination  
 
     def get(self, request):
         queryset = Post.objects.all().order_by('-created_at')
