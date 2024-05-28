@@ -29,7 +29,7 @@ class ProfileDetail(APIView):
     """
     API view for retrieving and updating a profile.
     """
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly,IsAuthenticated]
 
     def get_object(self, pk):
         """
