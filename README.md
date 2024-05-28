@@ -237,5 +237,9 @@ Heroku provides a platform for easy deployment and scaling of the application.
 
 ## Acknowledgements
 
-https://books.agiliq.com/projects/django-orm-cookbook/en/latest/query_relatedtool.html
+- Search Query 
+
+- https://books.agiliq.com/projects/django-orm-cookbook/en/latest/query_relatedtool.html
+- https://ahmedyasin487.medium.com/mastering-querying-in-django-a-comprehensive-guide-to-the-q-object-31d50a66524e 
+- https://www.codu.co/articles/using-q-objects-for-complex-searches-6vk9rl78
 
