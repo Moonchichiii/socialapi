@@ -180,11 +180,12 @@ Clone the repository to your local machine:
 [Manual Testing](testingmd/testmd.md)
 
 ### Unit Tests 
-![unit tests](<testingmd/htmlcov/unit tests.png>)
+![unit tests](<testingmd/images/unit tests.png>)
 
 ### Coverage
 
-[Coverage Report](testingmd/htmlcov/index.html)
+[Coverage Report](testingmd/images/Coverage.png)
+
 
 ## Deployment 
 
