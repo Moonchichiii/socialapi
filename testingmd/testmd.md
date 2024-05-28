@@ -41,5 +41,13 @@
 | _[Comment Detail](https://socialapi-ce69e07a68e6.herokuapp.com/api/posts/4/comments/5/)_ | Comment Detail (PUT Authenticated Owner) | Returns 200 response: allows the owner to update the comment | Pass | [Screenshot](images/comments/UpdateCommentAuthPass.png) |
 | _[Comment Detail](https://socialapi-ce69e07a68e6.herokuapp.com/api/posts/4/comments/5/)_ | Comment Detail (PUT Unauthenticated) | Returns 401 error: authentication credentials were not provided | Pass | [Screenshot](images/comments/PutCommentUpdateNoAuthPass.png) |
 | _[Comment Detail](https://socialapi-ce69e07a68e6.herokuapp.com/api/posts/4/comments/5/)_ | Comment Detail (DELETE Authenticated Owner) | Returns 204 response: comment is deleted | Pass | [Screenshot](images/comments/DeleteCommentAuthPass.png) |
-
+| **Followers** | | | | |
+| _[Follower](https://socialapi-ce69e07a68e6.herokuapp.com/api/followers/)_ | Followers (GET Unauthenticated) | Returns 401 error: authentication credentials were not provided | Pass | [Screenshot](images/followers/FollowerListGetNoAuth.png) |
+| _[Follower](https://socialapi-ce69e07a68e6.herokuapp.com/api/followers/)_ | Followers (GET Authenticated) | Returns 200 response: a list of followers and following profiles | Pass | [Screenshot](images/followers/FollowerListGetAuth.png) |
+| _[Follower](https://socialapi-ce69e07a68e6.herokuapp.com/api/followers/)_ | Followers (POST Authenticated) | Returns 400 error: already following profile | Pass | [Screenshot](images/followers/AlreadyFollowingAProfile.png) |
+| _[Follower](https://socialapi-ce69e07a68e6.herokuapp.com/api/followers/)_ | Followers (POST Authenticated) | Returns 400 error: can't follow yourself | Pass | [Screenshot](images/followers/FollowMySelf.png) |
+| _[Follower](https://socialapi-ce69e07a68e6.herokuapp.com/api/followers/)_ | Followers (POST Authenticated) | Returns 201 response: followed new profile | Pass | [Screenshot](images/followers/FollowNewProfileAuth.png) |
+| _[Follower](https://socialapi-ce69e07a68e6.herokuapp.com/api/followers/)_ | Followers (POST Unauthenticated) | Returns 401 error: authentication credentials were not provided | Pass | [Screenshot](images/followers/FollowNoAuth.png) |
+| _[Unfollow](https://socialapi-ce69e07a68e6.herokuapp.com/api/followers/4/)_ | Followers (DELETE Unauthenticated) | Returns 401 error: authentication credentials were not provided | Pass | [Screenshot](images/followers/unfollowNoAuth.png) |
+| _[Unfollow](https://socialapi-ce69e07a68e6.herokuapp.com/api/followers/4/)_ | Followers (DELETE Authenticated) | Returns 204 response: unfollowed the profile | Pass | [Screenshot](images/followers/unfollowAuth.png) |
 
