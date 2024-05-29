@@ -4,6 +4,7 @@
 ## 👉 [Link to Live Project](https://socialclient-eaf34c2355da.herokuapp.com/) 
 
 
+👉 [Link to Frontend Repository](https://github.com/Moonchichiii/socialclient) 
 
 ## Table of Contents
 
